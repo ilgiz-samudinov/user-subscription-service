@@ -1,0 +1,31 @@
+services:
+  user-subscription:
+    build:
+      context: user-subscription-service
+      dockerfile: Dockerfile
+    image: user-subscription
+    container_name: user-subscription
+    ports:
+      - "8080:8080"
+    depends_on:
+      - postgres
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/user_subscription_db
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: postgres
+
+
+  postgres:
+    image: postgres:16.0
+    container_name: postgres
+    restart: always
+    environment:
+      - POSTGRES_DB=user_subscription_db
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+volumes:
+  pgdata:
