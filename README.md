@@ -16,6 +16,8 @@
 
 ---
 
+
+
 ## Функциональные возможности
 
 ### Управление пользователями
@@ -40,95 +42,6 @@
 - **PostgreSQL** — реляционная база данных.
 - **Maven** — управление зависимостями.
 - **Docker** — контейнеризация.
-
----
-
-## Схема базы данных
-
-### Таблица `users`
-| Поле         | Тип          | Ограничения          | Описание               |
-|--------------|--------------|----------------------|------------------------|
-| `id`         | BIGINT       | Primary Key, Auto-increment | Уникальный ID пользователя |
-| `email`      | VARCHAR(255) | Unique, Not Null    | Email пользователя     |
-| `password`   | VARCHAR(255) | Not Null            | Пароль пользователя    |
-| `firstName`  | VARCHAR(255) | Not Null            | Имя пользователя       |
-| `lastName`   | VARCHAR(255) | Not Null            | Фамилия пользователя   |
-| `phone`      | VARCHAR(20)  | Not Null            | Телефон пользователя   |
-
-### Таблица `subscriptions`
-| Поле                   | Тип              | Ограничения                                                | Описание                                                |
-|-----------------------|------------------|-----------------------------------------------------------|--------------------------------------------------------|
-| `id`                  | BIGINT          | Primary Key, Auto-increment, Not Null                     | Уникальный ID подписки                                 |
-| `user_id`             | BIGINT          | Foreign Key → `users(id)`, Not Null                       | Ссылка на пользователя                                 |
-| `subscription_service`| VARCHAR (ENUM)  | Not Null                                                  | Название сервиса (enum `SubscriptionService`)          |
-| `subscription_type`   | VARCHAR (ENUM)  | Not Null                                                  | Тип подписки (enum `SubscriptionType`)                 |
-| `start_date`          | DATE            | Not Null                                                  | Дата начала подписки                                   |
-| `end_date`            | DATE            | Not Null                                                  | Дата окончания подписки                                |
-| `status`              | VARCHAR (ENUM)  | Not Null                                                  | Статус подписки (enum `Status`)                        |
-| `auto_renew`          | BOOLEAN         |                                                           | Флаг автообновления                                    |
-| `price`               | DECIMAL(10,2)   | Not Null                                                  | Стоимость подписки                                     |
-| `currency`            | VARCHAR (ENUM)  | Not Null                                                  | Валюта платежа (enum `Currency`)                       |
-| `created_at`          | TIMESTAMP       | Not Null, Default CURRENT_TIMESTAMP, Updatable=false      | Время создания записи                                  |
-| `updated_at`          | TIMESTAMP       | Not Null, Default CURRENT_TIMESTAMP                       | Время последнего обновления                            |
-
----
-
-## API эндпоинты
-
-### Пользователи
-| Метод   | Эндпоинт           | Описание                     |
-|---------|--------------------|------------------------------|
-| `POST`  | `/users`           | Создать пользователя         |
-| `GET`   | `/users/{id}`      | Получить пользователя по ID  |
-| `PUT`   | `/users/{id}`      | Обновить данные пользователя |
-| `DELETE`| `/users/{id}`      | Удалить пользователя         |
-
-### Подписки
-| Метод   | Эндпоинт                          | Описание                        |
-|---------|-----------------------------------|---------------------------------|
-| `POST`  | `/users/{userId}/subscriptions`   | Добавить подписку              |
-| `GET`   | `/users/{userId}/subscriptions`   | Получить подписки пользователя |
-| `DELETE`| `/users/{userId}/subscriptions/{subscriptionId}` | Удалить подписку |
-| `GET`   | `/subscriptions/top`              | Топ-3 популярных сервиса       |
-
-### Дополнительные возможности
-| Метод   | Эндпоинт                          | Описание                        |
-|---------|-----------------------------------|---------------------------------|
-| `GET`   | `/api/subscriptions`              | Список всех подписок           |
-| `PATCH` | `/api/users/{userId}/subscriptions/{id}/auto-renew?autoRenew={true|false}` | Изменить автообновление |
-| `PATCH` | `/api/users/{userId}/subscriptions/{id}/cancel` | Отменить подписку         |
-| `PATCH` | `/api/users/{userId}/subscriptions/{id}/pause`  | Приостановить подписку    |
-
----
-
-## Примеры запросов
-
-### Создание пользователя
-**Запрос**: `POST /users`  
-**Тело запроса**:
-```json
-{
-    "email": "ilgiz@gmail.com",
-    "password": "ilgiz",
-    "firstName": "Ilgiz",
-    "lastName": "Samudinov",
-    "phone": "+996706540198"
-}
-```
-**Ответ**: JSON с данными пользователя и присвоенным `id`.
-
-### Добавление подписки
-**Запрос**: `POST /users/{userId}/subscriptions`  
-**Тело запроса**:
-```json
-{
-    "subscriptionService": "YANDEX",
-    "subscriptionType": "PLUS",
-    "autoRenew": true
-}
-```
-**Примечание**: `userId` передается в URL.  
-**Ответ**: JSON с данными подписки и присвоенным `id`.
 
 ---
 
@@ -190,6 +103,68 @@ example/com/usersubscriptionservice/
 │           └── SubscriptionType.java
 ```
 
+
+
+## Схема базы данных
+
+### Таблица `users`
+| Поле         | Тип          | Ограничения          | Описание               |
+|--------------|--------------|----------------------|------------------------|
+| `id`         | BIGINT       | Primary Key, Auto-increment | Уникальный ID пользователя |
+| `email`      | VARCHAR(255) | Unique, Not Null    | Email пользователя     |
+| `password`   | VARCHAR(255) | Not Null            | Пароль пользователя    |
+| `firstName`  | VARCHAR(255) | Not Null            | Имя пользователя       |
+| `lastName`   | VARCHAR(255) | Not Null            | Фамилия пользователя   |
+| `phone`      | VARCHAR(20)  | Not Null            | Телефон пользователя   |
+
+### Таблица `subscriptions`
+| Поле                   | Тип              | Ограничения                                                | Описание                                                |
+|-----------------------|------------------|-----------------------------------------------------------|--------------------------------------------------------|
+| `id`                  | BIGINT          | Primary Key, Auto-increment, Not Null                     | Уникальный ID подписки                                 |
+| `user_id`             | BIGINT          | Foreign Key → `users(id)`, Not Null                       | Ссылка на пользователя                                 |
+| `subscription_service`| VARCHAR (ENUM)  | Not Null                                                  | Название сервиса (enum `SubscriptionService`)          |
+| `subscription_type`   | VARCHAR (ENUM)  | Not Null                                                  | Тип подписки (enum `SubscriptionType`)                 |
+| `start_date`          | DATE            | Not Null                                                  | Дата начала подписки                                   |
+| `end_date`            | DATE            | Not Null                                                  | Дата окончания подписки                                |
+| `status`              | VARCHAR (ENUM)  | Not Null                                                  | Статус подписки (enum `Status`)                        |
+| `auto_renew`          | BOOLEAN         |                                                           | Флаг автообновления                                    |
+| `price`               | DECIMAL(10,2)   | Not Null                                                  | Стоимость подписки                                     |
+| `currency`            | VARCHAR (ENUM)  | Not Null                                                  | Валюта платежа (enum `Currency`)                       |
+| `created_at`          | TIMESTAMP       | Not Null, Default CURRENT_TIMESTAMP, Updatable=false      | Время создания записи                                  |
+| `updated_at`          | TIMESTAMP       | Not Null, Default CURRENT_TIMESTAMP                       | Время последнего обновления                            |
+
+---
+
+## API эндпоинты
+
+### Пользователи
+| Метод   | Эндпоинт           | Описание                     |
+|---------|--------------------|------------------------------|
+| `POST`  | `/users`           | Создать пользователя         |
+| `GET`   | `/users/{id}`      | Получить пользователя по ID  |
+| `PUT`   | `/users/{id}`      | Обновить данные пользователя |
+| `DELETE`| `/users/{id}`      | Удалить пользователя         |
+
+### Подписки
+| Метод   | Эндпоинт                          | Описание                        |
+|---------|-----------------------------------|---------------------------------|
+| `POST`  | `/users/{userId}/subscriptions`   | Добавить подписку              |
+| `GET`   | `/users/{userId}/subscriptions`   | Получить подписки пользователя |
+| `DELETE`| `/users/{userId}/subscriptions/{subscriptionId}` | Удалить подписку |
+| `GET`   | `/subscriptions/top`              | Топ-3 популярных сервиса       |
+
+### Дополнительные возможности
+| Метод   | Эндпоинт                          | Описание                        |
+|---------|-----------------------------------|---------------------------------|
+| `GET`   | `/api/subscriptions`              | Список всех подписок           |
+| `PATCH` | `/api/users/{userId}/subscriptions/{id}/auto-renew?autoRenew={true|false}` | Изменить автообновление |
+| `PATCH` | `/api/users/{userId}/subscriptions/{id}/cancel` | Отменить подписку         |
+| `PATCH` | `/api/users/{userId}/subscriptions/{id}/pause`  | Приостановить подписку    |
+
+---
+
+
+
 ---
 
 ## Установка и запуск
@@ -211,14 +186,37 @@ example/com/usersubscriptionservice/
    docker-compose up --build
    ```
 
-3. **Остановка приложения**:
-   ```bash
-   docker-compose down
-   ```
+
+## Примеры запросов
+
+### Создание пользователя
+**Запрос**: `POST /users`  
+**Тело запроса**:
+```json
+{
+    "email": "ilgiz@gmail.com",
+    "password": "ilgiz",
+    "firstName": "Ilgiz",
+    "lastName": "Samudinov",
+    "phone": "+996706540198"
+}
+```
+**Ответ**: JSON с данными пользователя и присвоенным `id`.
+
+### Добавление подписки
+**Запрос**: `POST /users/{userId}/subscriptions`  
+**Тело запроса**:
+```json
+{
+    "subscriptionService": "YANDEX",
+    "subscriptionType": "PLUS",
+    "autoRenew": true
+}
+```
+**Примечание**: `userId` передается в URL.  
+**Ответ**: JSON с данными подписки и присвоенным `id`.
 
 ---
-
-Приложение доступно на `http://localhost:8080`. 
 
 
 ## Возможные улучшения

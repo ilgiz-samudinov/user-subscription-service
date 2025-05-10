@@ -24,9 +24,10 @@ public interface SubscriptionMapper {
 
     @Mapping(
             target = "user",
-            expression = "java(userUseCase.getUser(subscriptionRequest.getUserId()))"
+            expression = "java(userUseCase.getUser(userId))"
     )
-    Subscription toDomain(SubscriptionRequest subscriptionRequest, @Context UserUseCase userUseCase);
+    Subscription toDomain(SubscriptionRequest subscriptionRequest, @Context UserUseCase userUseCase, @Context Long userId);
+
 
     @Mapping(target = "user", source = "user")
     SubscriptionResponse toResponse(Subscription subscription);

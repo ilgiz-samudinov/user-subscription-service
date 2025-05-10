@@ -29,12 +29,18 @@ public class SubscriptionController {
     private final UserUseCase userUseCase;
 
     @PostMapping("/users/{userId}/subscriptions")
-    public ResponseEntity<SubscriptionResponse> createSubscription(@PathVariable Long userId, @Valid @RequestBody SubscriptionRequest subscriptionRequest) {
+    public ResponseEntity<SubscriptionResponse> createSubscription(
+            @PathVariable Long userId,
+            @Valid @RequestBody SubscriptionRequest subscriptionRequest) {
+
         logger.info("Запрос на создание подписки для пользователя с ID: {}", userId);
-        Subscription subscription = subscriptionMapper.toDomain(subscriptionRequest, userUseCase);
+
+        Subscription subscription = subscriptionMapper.toDomain(subscriptionRequest, userUseCase, userId);
         Subscription createdSubscription = subscriptionUseCase.createSubscription(subscription);
-        logger.debug("Подписка для пользователя с ID: {} успешно создана", userId);
-        return ResponseEntity.status(HttpStatus.CREATED).body(subscriptionMapper.toResponse(createdSubscription));
+
+        logger.debug("Подписка успешно создана для пользователя с ID: {}", userId);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(subscriptionMapper.toResponse(createdSubscription));
     }
 
     @GetMapping("/subscriptions")
